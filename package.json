@@ -1,7 +1,7 @@
 {
   "name": "pkmn-auction",
   "version": "0.1.0",
-  "homepage": "https://liamo3323.github.io/poke-auction",
+  "homepage": "https://liamo3323.github.io/<your-repo-name>",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
