@@ -1,3 +1,9 @@
-export default function Page() {
-  return <h1>Page</h1>
+import Link from 'next/link';
+
+export default function Home() {
+  return (
+    <div>
+      <Link href="/team-builder">Team Builder</Link>
+    </div>
+  );
 }

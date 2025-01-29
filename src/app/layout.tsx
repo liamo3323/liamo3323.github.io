@@ -9,7 +9,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Navbar /> {/* Navbar appears on every page */}
+        {/* <Navbar /> Navbar appears on every page */}
         {children}
       </body>
     </html>
