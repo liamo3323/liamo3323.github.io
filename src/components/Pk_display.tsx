@@ -2,40 +2,49 @@
 import React, { useEffect, useState } from "react";
 import { getPokemonName } from "@components/Pk_api";
 
-const Pk_details = () => {
-  const [posts, setPosts] = useState<any[]>([]); // ✅ Store fetched Pokémon data
+interface PokemonProps {
+  pokemon: {
+    sprite: string;
+    name: string;
+    Types: { type: { name: string } }[];
+    Abilities: { ability: { name: string } }[];
+    BaseStats: {
+      HP: number;
+      Attack: number;
+      Defense: number;
+      SpecialAttack: number;
+      SpecialDefense: number;
+      Speed: number;
+    };
+    Evolutions: string[];
+    Moves: string[];
+  } | null;
+}
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const data = await getPokemonName(); // ✅ Fetch Pokémon with ID 1
-        setPosts([data]); // ✅ Store the Pokémon data in an array
-      } catch (error) {
-        console.error("Error fetching Pokémon:", error);
-      }
-    }
-
-    fetchData();
-  }, []);
+const Pk_display: React.FC<PokemonProps> = ({ pokemon }) => {
+  if (!pokemon) {
+    return <p>No Pokémon selected.</p>;
+  }
 
   return (
     <div>
-      {posts.length > 0 ? (
-        posts.map((post) => (
-          <div key={post.id}>
-            <p>Name: {post.name}</p>
-            <p>Type: {post.types[0].type.name}</p>
-            <p>Ability: {post.abilities[0].ability.name}</p>
-            <p>Base Stat: {post.stats[0].base_stat}</p>
-            <p>Evolution: idk</p>
-            <p>Moves?</p>
-          </div>
-        ))
-      ) : (
-        <p>Loading...</p> // ✅ Show loading message while fetching data
-      )}
+      <h2>{pokemon.name}</h2>
+      <img src={pokemon.sprite} alt={pokemon.name} width={150} />
+      <p>Types: {pokemon.Types.map((t) => t.type.name).join(", ")}</p>
+      <p>Abilities: {pokemon.Abilities.map((a) => a.ability.name).join(", ")}</p>
+      <p>Base Stats:</p>
+      <ul>
+        <li>HP: {pokemon.BaseStats.HP}</li>
+        <li>Attack: {pokemon.BaseStats.Attack}</li>
+        <li>Defense: {pokemon.BaseStats.Defense}</li>
+        <li>Special Attack: {pokemon.BaseStats.SpecialAttack}</li>
+        <li>Special Defense: {pokemon.BaseStats.SpecialDefense}</li>
+        <li>Speed: {pokemon.BaseStats.Speed}</li>
+      </ul>
+      <p>Evolutions: </p>
+      <p>Moves: {pokemon.Moves.join(", ") || "None"}</p>
     </div>
   );
 };
 
-export default Pk_details;
+export default Pk_display;
