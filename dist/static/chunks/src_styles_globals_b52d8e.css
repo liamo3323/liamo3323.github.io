@@ -1,0 +1,35 @@
+/* [project]/src/styles/globals.css [app-client] (css) */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #fff;
+  box-shadow: 0 4px 6px #0000001a;
+}
+
+.logo a {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  text-decoration: none;
+}
+
+.navLinks {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+}
+
+.navLinks a {
+  text-decoration: none;
+  color: #555;
+  font-weight: 500;
+  transition: color .3s;
+}
+
+.navLinks a:hover {
+  color: #0070f3;
+}
+
+/*# sourceMappingURL=src_styles_globals_b52d8e.css.map*/

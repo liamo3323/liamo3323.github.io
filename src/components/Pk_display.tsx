@@ -4,10 +4,10 @@ import { getPokemonName } from "@components/Pk_api";
 
 interface PokemonProps {
   pokemon: {
-    sprite: string;
+    sprite: string | undefined;
     name: string;
-    Types: { type: { name: string } }[];
-    Abilities: { ability: { name: string } }[];
+    Types: string[];
+    Abilities: string[];
     BaseStats: {
       HP: number;
       Attack: number;
@@ -16,9 +16,29 @@ interface PokemonProps {
       SpecialDefense: number;
       Speed: number;
     };
-    Evolutions: string[];
-    Moves: string[];
+    Evolutions: Map<string, any>;
+    Moves: {
+      moveName: string;
+      levelLearnedAt: number;
+      moveUrl: string;
+    }[];
   } | null;
+}
+
+interface Moves {
+  move: {
+    name: string;
+    url: string;
+  };
+  version_group_details: {
+    move_learn_method: {
+      name: string;
+    };
+    version_group: {
+      name: string;
+    };
+    level_learned_at: number;
+  }[];
 }
 
 const Pk_display: React.FC<PokemonProps> = ({ pokemon }) => {
@@ -30,8 +50,8 @@ const Pk_display: React.FC<PokemonProps> = ({ pokemon }) => {
     <div>
       <h2>{pokemon.name}</h2>
       <img src={pokemon.sprite} alt={pokemon.name} width={150} />
-      <p>Types: {pokemon.Types.map((t) => t.type.name).join(", ")}</p>
-      <p>Abilities: {pokemon.Abilities.map((a) => a.ability.name).join(", ")}</p>
+      <p>Types: {pokemon.Types.join(", ")}</p>  {/* Directly join strings */}
+      <p>Abilities: {pokemon.Abilities.join(", ")}</p>  {/* Directly join strings */}
       <p>Base Stats:</p>
       <ul>
         <li>HP: {pokemon.BaseStats.HP}</li>

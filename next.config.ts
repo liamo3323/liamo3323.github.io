@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   distDir: "dist",
   images: {
     unoptimized: true,
-  }
+  },
   basePath: '/liamo3323.github.io',
   assetPrefix: '/liamo3323.github.io',
 };

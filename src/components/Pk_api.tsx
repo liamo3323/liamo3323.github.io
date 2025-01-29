@@ -2,6 +2,30 @@ import {PokemonClient, EvolutionClient} from 'pokenode-ts'
 const evoapi = new EvolutionClient();
 const pokiapi = new PokemonClient();
 
+interface EvolutionDetails {
+  trigger: { name: string };
+  item?: { name: string } | null; 
+  min_level?: number | null;
+  time_of_day?: string | null;
+  known_move?: { name: string } | null;
+  known_move_type?: { name: string } | null;
+  location?: { name: string } | null;
+  held_item?: { name: string } | null;
+  min_happiness?: number | null;
+  min_beauty?: number | null;
+  min_affection?: number | null;
+  gender?: number | null;
+  relative_physical_stats?: number | null;
+  needs_overworld_rain?: boolean | null;
+  turn_upside_down?: boolean | null;
+}
+
+interface EvolutionChain {
+  species: { name: string };
+  evolves_to: EvolutionChain[];
+  evolution_details: EvolutionDetails[];
+}
+
   export async function getPokemonId(id: number = 1) {
     const url = `https://pokeapi.co/api/v2/pokemon/${id}/`; 
     // console.log(`Fetching data from: ${url}`); 
@@ -25,12 +49,16 @@ const pokiapi = new PokemonClient();
   export async function getPokemonEvolutions(name: string = 'bulbasaur') {
     const pkmnSpecies = await pokiapi.getPokemonSpeciesByName(name)
     const idMatch = pkmnSpecies.evolution_chain.url.match(/evolution-chain\/(\d+)/)
-    const evolutionChainId = idMatch ? idMatch[1] : null;
+    const evolutionChainId = idMatch ? Number(idMatch[1]) : null;
+
+    if (!evolutionChainId) {
+      throw new Error(`Failed to find evolution chain ID for ${name}`);
+    }
     const evolution = await evoapi.getEvolutionChainById(evolutionChainId)
 
-    const evolutionMap = new Map();
+    const evolutionMap = new Map<string, any>();
 
-    const traverseEvolutions = (chain) => {
+    const traverseEvolutions = (chain: EvolutionChain) => {
       const speciesName = chain.species.name;
       const evolvesTo = chain.evolves_to;
 
@@ -89,11 +117,17 @@ const pokiapi = new PokemonClient();
         const moveUrl = move.move.url;
 
         return { moveName, levelLearnedAt, moveUrl };
-      }).filter(Boolean);
+      }).filter((move): move is { moveName: string; levelLearnedAt: number; moveUrl: string } => move !== null);
 
 
     levelUpMoves.sort((a, b) => a.levelLearnedAt - b.levelLearnedAt);
     return levelUpMoves
+  }
+
+  export async function getPokemonAbility(name: string = 'bulbasaur') {
+    const pkmn = await pokiapi.getPokemonByName(name)
+    const abilities = pkmn.abilities.map((ability) => ability.ability.name)
+    return abilities
   }
 
   export async function fetchPokemonDetails(name: string = 'bulbasaur') {
@@ -101,10 +135,10 @@ const pokiapi = new PokemonClient();
     const pkmn = await pokiapi.getPokemonByName(name)
 
     const jsonPkmn = {
-      sprite: pkmn.sprites.other?.['official-artwork'].front_default,
+      sprite: pkmn.sprites.other?.['official-artwork'].front_default || 'default_sprice_png',
       name: pkmn.name,
-      Types: pkmn.types,
-      Abilities: pkmn.abilities,
+      Types: pkmn.types.map((type) => type.type.name),
+      Abilities: await getPokemonAbility(name),
       BaseStats: {
         HP: pkmn.stats[0].base_stat,
         Attack: pkmn.stats[1].base_stat,
@@ -116,6 +150,6 @@ const pokiapi = new PokemonClient();
       Evolutions: await getPokemonEvolutions(name),
       Moves: await getPokemonLevelUpMoves(name)
     };
-    console.log(jsonPkmn.Evolutions)
+    console.log(jsonPkmn)
     return jsonPkmn
   }
